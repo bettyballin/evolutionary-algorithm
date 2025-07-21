@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evolutionary Algorithm Dynamics Visualizer</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- D3.js for visualizations -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Evolutionary Algorithm Dynamics Visualizer</h1>
+        <p class="subtitle">An interactive visualization of evolutionary computation principles</p>
+    </header>
+
+    <div class="container">
+        <div class="controls-panel">
+            <h2>Algorithm Parameters</h2>
+            
+            <div class="parameter">
+                <label for="populationSize">Population Size:</label>
+                <input type="range" id="populationSize" min="10" max="200" value="50" step="5">
+                <span id="populationSizeValue">50</span>
+            </div>
+            
+            <div class="parameter">
+                <label for="mutationRate">Mutation Rate:</label>
+                <input type="range" id="mutationRate" min="0" max="1" value="0.1" step="0.01">
+                <span id="mutationRateValue">0.1</span>
+            </div>
+            
+            <div class="parameter">
+                <label for="crossoverRate">Crossover Rate:</label>
+                <input type="range" id="crossoverRate" min="0" max="1" value="0.7" step="0.01">
+                <span id="crossoverRateValue">0.7</span>
+            </div>
+            
+            <div class="parameter">
+                <label for="selectionPressure">Selection Pressure:</label>
+                <input type="range" id="selectionPressure" min="1" max="10" value="3" step="0.5">
+                <span id="selectionPressureValue">3</span>
+            </div>
+            
+            <div class="parameter">
+                <label for="fitnessFunction">Fitness Function:</label>
+                <select id="fitnessFunction">
+                    <option value="sphere">Sphere Function</option>
+                    <option value="rastrigin">Rastrigin Function</option>
+                    <option value="rosenbrock">Rosenbrock Function</option>
+                    <option value="ackley">Ackley Function</option>
+                </select>
+            </div>
+            
+            <div class="parameter">
+                <label for="selectionMethod">Selection Method:</label>
+                <select id="selectionMethod">
+                    <option value="tournament">Tournament Selection</option>
+                    <option value="roulette">Roulette Wheel Selection</option>
+                    <option value="rank">Rank Selection</option>
+                </select>
+            </div>
+            
+            <div class="buttons">
+                <button id="startButton">Start Evolution</button>
+                <button id="pauseButton" disabled>Pause</button>
+                <button id="resetButton">Reset</button>
+                <button id="stepButton">Step Generation</button>
+            </div>
+        </div>
+        
+        <div class="visualization-panel">
+            <div class="tabs">
+                <button class="tab-button active" data-tab="fitness-landscape">Fitness Landscape</button>
+                <button class="tab-button" data-tab="population-diversity">Population Diversity</button>
+                <button class="tab-button" data-tab="genetic-operations">Genetic Operations</button>
+                <button class="tab-button" data-tab="selection-pressure">Selection Pressure</button>
+                <button class="tab-button" data-tab="strategy-comparison">Strategy Comparison</button>
+            </div>
+            
+            <div class="tab-content">
+                <div id="fitness-landscape" class="tab-pane active">
+                    <h3>Fitness Landscape</h3>
+                    <div class="visualization-container" id="fitness-landscape-viz"></div>
+                    <div class="explanation">
+                        <p>The fitness landscape represents the mapping from genotype (solution) to fitness value. Peaks represent high fitness, while valleys represent low fitness. The algorithm aims to find the highest peak.</p>
+                    </div>
+                </div>
+                
+                <div id="population-diversity" class="tab-pane">
+                    <h3>Population Diversity</h3>
+                    <div class="visualization-container" id="population-diversity-viz"></div>
+                    <div class="explanation">
+                        <p>This visualization shows the diversity of the population over generations. High diversity means solutions are spread out in the search space, while low diversity indicates convergence.</p>
+                    </div>
+                </div>
+                
+                <div id="genetic-operations" class="tab-pane">
+                    <h3>Genetic Operations</h3>
+                    <div class="visualization-container" id="mutation-viz"></div>
+                    <div class="visualization-container" id="crossover-viz"></div>
+                    <div class="explanation">
+                        <p>Mutation introduces small random changes to individuals, enabling exploration of the search space. Crossover combines genetic material from two parents to create offspring, enabling exploitation of good solutions.</p>
+                    </div>
+                </div>
+                
+                <div id="selection-pressure" class="tab-pane">
+                    <h3>Selection Pressure</h3>
+                    <div class="visualization-container" id="selection-pressure-viz"></div>
+                    <div class="explanation">
+                        <p>Selection pressure determines how strongly fitness influences selection for reproduction. Higher pressure favors fitter individuals, potentially leading to premature convergence. Lower pressure maintains diversity but may slow convergence.</p>
+                    </div>
+                </div>
+                
+                <div id="strategy-comparison" class="tab-pane">
+                    <h3>Strategy Comparison</h3>
+                    <div class="visualization-container" id="strategy-comparison-viz"></div>
+                    <div class="explanation">
+                        <p>This visualization compares different evolutionary strategies (combinations of selection methods, mutation rates, etc.) on the same problem, showing how they affect convergence speed and solution quality.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="generation-panel">
+        <h2>Evolution Progress</h2>
+        <div class="stats">
+            <div class="stat">
+                <span class="stat-label">Generation:</span>
+                <span class="stat-value" id="generation-count">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Best Fitness:</span>
+                <span class="stat-value" id="best-fitness">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Average Fitness:</span>
+                <span class="stat-value" id="avg-fitness">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Diversity:</span>
+                <span class="stat-value" id="diversity">0</span>
+            </div>
+        </div>
+        <div class="generation-viz" id="generation-progression"></div>
+    </div>
+    
+    <footer>
+        <p>Evolutionary Algorithm Dynamics Visualizer - Academic Project</p>
+        <p>Demonstrates the principles and dynamics of evolutionary computation through interactive visualizations</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="evolutionaryAlgorithm.js"></script>
+    <script src="visualizations.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
